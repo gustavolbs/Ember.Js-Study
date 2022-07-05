@@ -1,12 +1,11 @@
 import Controller from "@ember/controller";
 import { action } from "@ember/object";
 import { empty } from "@ember/object/computed";
-import Song from "rarwe/models/song";
 
 export default Controller.extend({
   isAddingSong: false,
-  newSongName: "",
-  isAddButtonDisabled: empty("newSongName"),
+  newSongTitle: "",
+  isAddButtonDisabled: empty("newSongTitle"),
 
   addSong: action(function () {
     this.set("isAddingSong", true);
@@ -16,18 +15,18 @@ export default Controller.extend({
     this.set("isAddingSong", false);
   }),
 
-  saveSong: action(function (event) {
+  saveSong: action(async function (event) {
     event.preventDefault();
-    let newSong = Song.create({
-      title: this.newSongName,
-      // band: this.model.name,
-      // rating: Math.floor(Math.random() * 6),
+    let newSong = this.store.createRecord("song", {
+      title: this.get("newSongTitle"),
+      band: this.model,
     });
-    this.model.songs.pushObject(newSong);
-    this.set("newSongName", "");
+    await newSong.save();
+    this.set("newSongTitle", "");
   }),
 
   updateRating: action(function (song, rating) {
     song.set("rating", song.rating === rating ? 0 : rating);
+    song.save();
   }),
 });
