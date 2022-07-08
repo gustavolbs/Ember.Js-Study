@@ -1,8 +1,12 @@
 import { module, test } from "qunit";
-import { visit, pauseTest } from "@ember/test-helpers";
+import { visit, click, fillIn, currentURL } from "@ember/test-helpers";
 import { setupApplicationTest } from "ember-qunit";
 import { setupMirage } from "ember-cli-mirage/test-support";
 import { createBand } from "rarwe/tests/helpers/custom-helpers";
+
+const clickId = async (testId) => {
+  return await click(`[data-test-rr=${testId}]`);
+};
 
 module("Acceptance | Bands", function (hooks) {
   setupApplicationTest(hooks);
@@ -45,5 +49,146 @@ module("Acceptance | Bands", function (hooks) {
     assert
       .dom("[data-test-rr=songs-nav-item] > .active")
       .exists("The Songs tab is active");
+  });
+
+  test("Sort songs in various ways", async function (assert) {
+    let band = this.server.create("band", { name: "Them Crooked Vultures" });
+    this.server.create("song", { title: "Elephants", rating: 5, band });
+    this.server.create("song", { title: "New Fang", rating: 4, band });
+    this.server.create("song", {
+      title: "Mind Erases, No Chaser",
+      rating: 4,
+      band,
+    });
+    this.server.create("song", {
+      title: "Spinning in Daffodils",
+      rating: 5,
+      band,
+    });
+
+    await visit("/");
+    await clickId("band-link");
+    assert
+      .dom("[data-test-rr=song-list-item]:first-child")
+      .hasText(
+        "Elephants",
+        "The first song is the highest ranked, first one in the alphabet"
+      );
+    assert
+      .dom("[data-test-rr=song-list-item]:last-child")
+      .hasText(
+        "New Fang",
+        "The last song is the lowest ranked, last one in the alphabet"
+      );
+
+    // TITLE DESCENDING
+    await clickId("sort-by-title-desc");
+    assert.equal(currentURL(), "/bands/1/songs?s=titleDesc");
+    assert
+      .dom("[data-test-rr=song-list-item]:first-child")
+      .hasText(
+        "Spinning in Daffodils",
+        "The first song is the one that comes last in the alphabet"
+      );
+    assert
+      .dom("[data-test-rr=song-list-item]:last-child")
+      .hasText(
+        "Elephants",
+        "The last song is the one that comes first in the alphabet"
+      );
+
+    // TITLE ASCENDING
+    await clickId("sort-by-title-asc");
+    assert.equal(currentURL(), "/bands/1/songs?s=titleAsc");
+    assert
+      .dom("[data-test-rr=song-list-item]:first-child")
+      .hasText(
+        "Elephants",
+        "The first song is the one that comes first in the alphabet"
+      );
+    assert
+      .dom("[data-test-rr=song-list-item]:last-child")
+      .hasText(
+        "Spinning in Daffodils",
+        "The last song is the one that comes last in the alphabet"
+      );
+
+    // RATING DESCENDING
+    await clickId("sort-by-rating-desc");
+    assert.equal(currentURL(), "/bands/1/songs");
+    assert
+      .dom("[data-test-rr=song-list-item]:first-child")
+      .hasText(
+        "Elephants",
+        "The first song is the highest ranked, first one in the alphabet"
+      );
+    assert
+      .dom("[data-test-rr=song-list-item]:last-child")
+      .hasText(
+        "New Fang",
+        "The last song is the lowest ranked, last one in the alphabet"
+      );
+
+    // RATING ASCENDING
+    await clickId("sort-by-rating-asc");
+    assert.equal(currentURL(), "/bands/1/songs?s=ratingAsc");
+    assert
+      .dom("[data-test-rr=song-list-item]:first-child")
+      .hasText(
+        "Mind Erases, No Chaser",
+        "The first song is the lowest ranked, first one in the alphabet"
+      );
+    assert
+      .dom("[data-test-rr=song-list-item]:last-child")
+      .hasText(
+        "Spinning in Daffodils",
+        "The last song is the highest ranked, last one in the alphabet"
+      );
+  });
+
+  test("Search songs", async function (assert) {
+    let band = this.server.create("band", { name: "Them Crooked Vultures" });
+    this.server.create("song", { title: "Elephants", rating: 5, band });
+    this.server.create("song", { title: "New Fang", rating: 4, band });
+    this.server.create("song", {
+      title: "Mind Erases, No Chaser",
+      rating: 4,
+      band,
+    });
+    this.server.create("song", {
+      title: "Spinning in Daffodils",
+      rating: 5,
+      band,
+    });
+    this.server.create("song", {
+      title: "No One Loves Me & Neither Do I",
+      rating: 5,
+      band,
+    });
+
+    await visit("/");
+    await clickId("band-link");
+    await fillIn("[data-test-rr=search-box]", "no");
+
+    assert.equal(currentURL(), "/bands/1/songs?q=no");
+    assert
+      .dom("[data-test-rr=song-list-item]")
+      .exists({ count: 2 }, "The songs matching the search term are displayed");
+
+    await click("[data-test-rr=sort-by-title-desc]");
+    assert
+      .dom("[data-test-rr=song-list-item]:first-child")
+      .hasText(
+        "No One Loves Me & Neither Do I",
+        "A matching song that comes later in the alphabet appears on top"
+      );
+    assert
+      .dom("[data-test-rr=song-list-item]:last-child")
+      .hasText(
+        "Mind Erases, No Chaser",
+        "A matching song that comes sooner in the alphabet appears at the bottom"
+      );
+    assert.ok(currentURL().includes("q=no"));
+    assert.ok(currentURL().includes("s=titleDesc"));
   });
 });

@@ -1,5 +1,50 @@
+<div class="rr-controls-panel">
+  <div class="rr-sort-panel">
+    <LinkTo
+      data-test-rr="sort-by-rating-desc"
+      class="rr-sort-button"
+      @query={{hash s="ratingDesc"}}
+    >
+      Rating
+      {{fa-icon "angle-down"}}
+    </LinkTo>
+    <LinkTo
+      data-test-rr="sort-by-rating-asc"
+      class="rr-sort-button"
+      @query={{hash s="ratingAsc"}}
+    >
+      Rating
+      {{fa-icon "angle-up"}}
+    </LinkTo>
+    <LinkTo
+      data-test-rr="sort-by-title-desc"
+      class="rr-sort-button"
+      @query={{hash s="titleDesc"}}
+    >
+      Title
+      {{fa-icon "angle-down"}}
+    </LinkTo>
+    <LinkTo
+      data-test-rr="sort-by-title-asc"
+      class="rr-sort-button"
+      @query={{hash s="titleDesc"}}
+    >
+      Title
+      {{fa-icon "angle-up"}}
+    </LinkTo>
+  </div>
+  <div class="rr-search-panel">
+    <Input
+      @type="text"
+      class="rr-input"
+      @value={{this.searchTerm}}
+      data-test-rr="search-box"
+    />
+    <div class="rr-search-icon">{{fa-icon "search"}}</div>
+  </div>
+</div>
 <ul class="rr-list">
-  {{#each this.model.songs as |song|}}
+  {{#each this.sortedSongs as |song|}}
     <li class="rr-list-item" data-test-rr="song-list-item">
       {{song.title}}
       <StarRating
