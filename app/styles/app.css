@@ -11,6 +11,8 @@
   --button-bg-color: var(--blue);
   --button-hover-color: var(--dark-blue);
   --button-disabled-color: var(--light-blue);
+  --light-red: #ff725c;
+  --error-color: var(--light-red);
   max-width: 90%;
   margin: 0 auto;
 }
@@ -225,4 +227,28 @@ button {
   padding-right: 0.5rem;
   margin-left: -5px;
   border-width: 0;
+}
+
+.rr-loading-pane {
+  margin: 25px auto;
+}
+
+.rr-loading-message {
+  text-align: center;
+}
+
+.rr-spinner {
+  background: url("/images/spinner.svg") no-repeat;
+  height: 31px;
+  width: 31px;
+  margin: 0 auto;
+}
+
+.rr-error-pane {
+  margin: 25px auto;
+}
+
+.rr-error-message {
+  text-align: center;
+  color: var(--error-color);
 }

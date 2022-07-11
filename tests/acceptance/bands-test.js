@@ -87,7 +87,7 @@ module("Acceptance | Bands", function (hooks) {
     assert
       .dom("[data-test-rr=song-list-item]:first-child")
       .hasText(
-        "Spinning in Daffodils",
+        "Spinning In Daffodils",
         "The first song is the one that comes last in the alphabet"
       );
     assert
@@ -109,7 +109,7 @@ module("Acceptance | Bands", function (hooks) {
     assert
       .dom("[data-test-rr=song-list-item]:last-child")
       .hasText(
-        "Spinning in Daffodils",
+        "Spinning In Daffodils",
         "The last song is the one that comes last in the alphabet"
       );
 
@@ -141,7 +141,7 @@ module("Acceptance | Bands", function (hooks) {
     assert
       .dom("[data-test-rr=song-list-item]:last-child")
       .hasText(
-        "Spinning in Daffodils",
+        "Spinning In Daffodils",
         "The last song is the highest ranked, last one in the alphabet"
       );
   });

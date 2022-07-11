@@ -27,7 +27,7 @@
     <LinkTo
       data-test-rr="sort-by-title-asc"
       class="rr-sort-button"
-      @query={{hash s="titleDesc"}}
+      @query={{hash s="titleAsc"}}
     >
       Title
       {{fa-icon "angle-up"}}
@@ -46,7 +46,7 @@
 <ul class="rr-list">
   {{#each this.sortedSongs as |song|}}
     <li class="rr-list-item" data-test-rr="song-list-item">
-      {{song.title}}
+      {{capitalize song.title}}
       <StarRating
         class="fr"
         @rating={{song.rating}}
@@ -58,8 +58,9 @@
   {{else}}
     <li class="tc">
       No
-      {{this.model.name}}
-      songs yet.
+      {{capitalize this.model.name}}
+      songs yet, why don't you
+      <a href="#" onclick={{action "addSong"}}>create one?</a>
     </li>
   {{/each}}
 </ul>
@@ -74,7 +75,7 @@
         @type="text"
         @value={{this.newSongTitle}}
         class="rr-input"
-        placeholder="New song"
+        placeholder={{this.newSongTitle}}
         data-test-rr="new-song-input"
       />
       <button
