@@ -2,7 +2,7 @@ import { module, test } from "qunit";
 import { visit, click, fillIn, currentURL } from "@ember/test-helpers";
 import { setupApplicationTest } from "ember-qunit";
 import { setupMirage } from "ember-cli-mirage/test-support";
-import { createBand } from "rarwe/tests/helpers/custom-helpers";
+import { loginAs, createBand } from "rarwe/tests/helpers/custom-helpers";
 
 const clickId = async (testId) => {
   return await click(`[data-test-rr=${testId}]`);
@@ -16,6 +16,7 @@ module("Acceptance | Bands", function (hooks) {
     this.server.create("band", { name: "Radiohead" });
     this.server.create("band", { name: "Long Distance Calling" });
 
+    await loginAs("teste@teste.com");
     await visit("/");
 
     assert
@@ -190,5 +191,11 @@ module("Acceptance | Bands", function (hooks) {
       );
     assert.ok(currentURL().includes("q=no"));
     assert.ok(currentURL().includes("s=titleDesc"));
+  });
+
+  test("Visit landing page without signing in", async function (assert) {
+    await visit("/");
+    assert.dom("[data-test-rr=form-header]").hasText("Log in to R&R");
+    assert.dom("[data-test-rr=user-email]").doesNotExist();
   });
 });
